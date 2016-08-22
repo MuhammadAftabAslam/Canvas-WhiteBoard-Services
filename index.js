@@ -27,11 +27,11 @@ app.use(morgan('tiny'));
 
 app.use('/', routes);
 
-const httpServer = app.listen(port, function() { console.log('Magic happens on port' )});
+const httpServer = app.listen(port, () => { console.log(`Magic happens on port ${port}`); });
 io = require('socket.io')(httpServer);
 
 
-io.on('connection', function(socket) {
+io.on('connection', socket => {
   socketRoutes.initializeSocket(socket);
 });
 
