@@ -31,7 +31,7 @@ const httpServer = app.listen(port, function() { console.log('Magic happens on p
 io = require('socket.io')(httpServer);
 
 
-io.on('connection', socket => {
+io.on('connection', function(socket) {
   socketRoutes.initializeSocket(socket);
 });
 
