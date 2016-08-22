@@ -6,7 +6,7 @@ const config = milieu('canvas-services', {
     port: 8080
   },
   mongo: {
-    url: 'mongodb://canvas-db'
+    url: 'mongodb://localhost/canvas-db'
   }
 });
 
