@@ -27,7 +27,7 @@ app.use(morgan('tiny'));
 
 app.use('/', routes);
 
-const httpServer = app.listen(port, function() { console.log(`Magic happens on port ${port}`); });
+const httpServer = app.listen(port, function() { console.log('Magic happens on port' )});
 io = require('socket.io')(httpServer);
 
 
