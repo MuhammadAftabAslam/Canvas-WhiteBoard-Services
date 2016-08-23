@@ -54,7 +54,7 @@ app.use(function(req, res, next) {
 
 /** API path that will upload the files */
 app.post('/upload',upload ,function (req, res) {
-  console.log('=====>>>>>>>',req.body);
+  console.log('=====>>>>>>>',req.body.file);
   res.json({status:200,data:req.file})
 });
 
