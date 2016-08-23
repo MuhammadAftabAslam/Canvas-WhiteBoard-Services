@@ -36,7 +36,7 @@ var storage = multer.diskStorage({ //multers disk storage settings
   },
   filename: function (req, file, cb) {
     var datetimestamp = Date.now();
-    cb(null, file.fieldname + '-' + datetimestamp + '.' + file.originalname.split('.')[file.originalname.split('.').length - 1])
+    cb(null, file.fieldname + '-' + datetimestamp + '.jpg')
   }
 });
 var upload = multer({ //multer settings
