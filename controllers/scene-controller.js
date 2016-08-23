@@ -24,6 +24,15 @@ class SceneController extends Controller {
     })
   }
 
+  getProjectVideo(obj) {
+    return this.model.find({
+      project_id: obj.project_id,
+      scene_hide: false
+    }).then(doc => {
+      return doc;
+    })
+  }
+
   updateScene(obj) {
     return this.model.update(obj._id,{
       name : obj.name,

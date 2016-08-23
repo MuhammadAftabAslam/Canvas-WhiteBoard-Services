@@ -10,6 +10,12 @@ exports.initializeSocket = function (socket) {
         socket.emit('res:save:scene', res);
       });
     })
+    .on('req:project:video', data => {
+      controllers.scene.getProjectVideo(data).then(res => {
+        console.log('res:project:video : ');
+        socket.emit('res:project:video', res);
+      });
+    })
     .on('req:hide:scene', data => {
       controllers.scene.hideScene(data).then(res => {
         console.log('res:hide:scene : ');
