@@ -5,7 +5,7 @@ exports.initializeSocket = function (socket) {
     console.log(`ping : `, data);
   })
     .on('req:save:scene', data => {
-      controllers.scene.saveScene(data).then(res => {
+      controllers.scene.saveScene(data,res => {
         console.log('res:save:scene : ');
         socket.emit('res:save:scene', res);
       });
@@ -20,6 +20,12 @@ exports.initializeSocket = function (socket) {
       controllers.scene.hideScene(data).then(res => {
         console.log('res:hide:scene : ');
         socket.emit('res:hide:scene', res);
+      });
+    })
+    .on('req:audio:concatenate', data => {
+      controllers.scene.concatente(data,res => {
+        console.log('res:audio:concatenate: ');
+        socket.emit('res:audio:concatenate', res);
       });
     })
     .on('req:update:scene', (data) => {
