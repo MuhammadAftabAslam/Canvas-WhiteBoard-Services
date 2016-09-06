@@ -30,8 +30,8 @@ class SceneController extends Controller {
     console.log('save scene controller', obj.audio_data[11],app.get('/uploads/'))//this.decodeBase64Image(obj.audio_data));
     if (obj.audio_data[11] == 'a') {
       var filename = (new Date()).getTime();
-      fs.writeFile(__dirname + '/uploads/'+filename+'.amr', new Buffer(obj.audio_data.split(',')[1], 'base64'), function (err) {
-        fs.createReadStream('./uploads/' + filename +'.amr')
+      fs.writeFile(app.get('/uploads/')+filename+'.amr', new Buffer(obj.audio_data.split(',')[1], 'base64'), function (err) {
+        fs.createReadStream(app.get('/uploads/') + filename +'.amr')
           .pipe(cloudconvert.convert({
             inputformat: 'amr',
             outputformat: 'mp3',
@@ -41,7 +41,7 @@ class SceneController extends Controller {
               audio_qscale: -1
             }
           }))
-          .pipe(fs.createWriteStream('./uploads/'+ filename +'.mp3'))
+          .pipe(fs.createWriteStream(app.get('/uploads/')+ filename +'.mp3'))
           .on('finish', function () {
             console.log('Done!');
             self.model.create({
@@ -59,7 +59,7 @@ class SceneController extends Controller {
     }
     else if (obj.audio_data[11] == 'm') {
       var filename = (new Date()).getTime() + '.mp3';
-      fs.writeFile('./uploads/' + filename, new Buffer(obj.audio_data.split(',')[1], 'base64'), function (err) {
+      fs.writeFile(app.get('/uploads/') + filename, new Buffer(obj.audio_data.split(',')[1], 'base64'), function (err) {
         if (!err) {
           self.model.create({
             name: obj.name,
