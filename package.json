@@ -12,7 +12,6 @@
   },
   "author": "Aftab Aslam <aftab.aslam@arbisoft.com>",
   "dependencies": {
-    "audioconcat": "^0.1.2",
     "bluebird": "^3.4.1",
     "body-parser": "^1.15.2",
     "cloudconvert": "^1.1.1",

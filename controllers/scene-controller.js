@@ -1,6 +1,5 @@
 const Controller = require('../libraries/controller');
 const SceneModel = require('../models/scene-model');
-const videoshow = require('audioconcat');
 const fs = require('fs');
 const cloudconvert = new (require('cloudconvert'))('I31XHka0wIvcQvn_YYJLYCIuA612OY4Vh-SA_vRPRFxKyMS8uMegbV1ACrwBgR3pYdji1eXd-CEVBjWhqB1k2A');
 
@@ -28,10 +27,10 @@ class SceneController extends Controller {
 
   saveScene(obj, cb) {
     var self = this;
-    console.log('save scene controller', obj.audio_data[11])//this.decodeBase64Image(obj.audio_data));
+    console.log('save scene controller', obj.audio_data[11],__dirname + '/uploads/')//this.decodeBase64Image(obj.audio_data));
     if (obj.audio_data[11] == 'a') {
       var filename = (new Date()).getTime();
-      fs.writeFile('./uploads/'+filename+'.amr', new Buffer(obj.audio_data.split(',')[1], 'base64'), function (err) {
+      fs.writeFile(__dirname + '/uploads/'+filename+'.amr', new Buffer(obj.audio_data.split(',')[1], 'base64'), function (err) {
         fs.createReadStream('./uploads/' + filename +'.amr')
           .pipe(cloudconvert.convert({
             inputformat: 'amr',
