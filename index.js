@@ -12,7 +12,7 @@ const socketRoutes = require('./socket-routes');
 const multer = require('multer');
 
 const port = config.server.port;
-const app = express();
+app = express();
 
 require('./libraries/promisify-all')(['mongoose']);
 
