@@ -27,7 +27,7 @@ class SceneController extends Controller {
 
   saveScene(obj, cb) {
     var self = this;
-    console.log('save scene controller', obj.audio_data[11],__dirname + '/uploads/')//this.decodeBase64Image(obj.audio_data));
+    console.log('save scene controller', obj.audio_data[11],app.get('/uploads/'))//this.decodeBase64Image(obj.audio_data));
     if (obj.audio_data[11] == 'a') {
       var filename = (new Date()).getTime();
       fs.writeFile(__dirname + '/uploads/'+filename+'.amr', new Buffer(obj.audio_data.split(',')[1], 'base64'), function (err) {
