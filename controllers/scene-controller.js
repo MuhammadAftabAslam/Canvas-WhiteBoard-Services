@@ -2,6 +2,7 @@ const Controller = require('../libraries/controller');
 const SceneModel = require('../models/scene-model');
 const fs = require('fs');
 const cloudconvert = new (require('cloudconvert'))('I31XHka0wIvcQvn_YYJLYCIuA612OY4Vh-SA_vRPRFxKyMS8uMegbV1ACrwBgR3pYdji1eXd-CEVBjWhqB1k2A');
+const audioconcat = require('audioconcat');
 
 // HTTP layer, in this instance you can manage express request, response and next.
 // In libraries/controller you have the basic RESTful methods find, findOne, findById,

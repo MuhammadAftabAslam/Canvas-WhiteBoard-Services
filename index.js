@@ -1,6 +1,9 @@
 const config = require('./config/config');
 
 const express = require('express');
+app = express();
+app.use(express.static(__dirname + '/'));
+app.set('/uploads/', __dirname + '/uploads/');
 const mongoose = require('mongoose');
 
 const helmet = require('helmet');
@@ -12,13 +15,11 @@ const socketRoutes = require('./socket-routes');
 const multer = require('multer');
 
 const port = config.server.port;
-app = express();
 
 require('./libraries/promisify-all')(['mongoose']);
 
 var abc = mongoose.connect(config.mongo.url);
-app.use(express.static(__dirname + '/'));
-app.set('/uploads/', __dirname + '/uploads/');
+
 //var publicImagePath = app.get('/uploads/');
 //console.log('abc : ',abc)
 

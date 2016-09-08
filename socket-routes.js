@@ -1,6 +1,7 @@
 const controllers = require('./controllers');
-
+const audioconcat = require('audioconcat');
 exports.initializeSocket = function (socket) {
+
   socket.on('ping', data => {
     console.log(`ping : `, data);
   })
@@ -13,7 +14,36 @@ exports.initializeSocket = function (socket) {
     .on('req:project:video', data => {
       controllers.scene.getProjectVideo(data).then(res => {
         console.log('res:project:video : ');
-        socket.emit('res:project:video', res);
+        var allCanvasData = [];
+        var audios = [];
+        res.map(ele => {
+          //console.log('response : ', JSON.parse(ele.drawing_data)[0].actionsets);
+          if (ele && ele.drawing_data && JSON.parse(ele.drawing_data)[0].actionsets) {
+            var obj = {actionsets: JSON.parse(ele.drawing_data)[0].actionsets};
+            allCanvasData.push(obj);
+          }
+          else {
+            allCanvasData.push([]);
+          }
+          audios.push(app.get('/uploads/') + ele.audio_data);
+        })
+        console.log('audios :', audios);
+        audioconcat(audios).concat(app.get('/uploads/') + data.project_id+'.mp3')
+          .on('start', function (command) {
+            console.log('ffmpeg process started:', command)
+          })
+          .on('error', function (err, stdout, stderr) {
+            console.error('Error:', err)
+            console.error('ffmpeg stderr:', stderr)
+          })
+          .on('end', function (output) {
+            var response = {
+              drawing_data: allCanvasData,
+              audio_data: data.project_id+'.mp3',
+              project_id : data.project_id
+            }
+            socket.emit('res:project:video', response);
+          })
       });
     })
     .on('req:hide:scene', data => {
