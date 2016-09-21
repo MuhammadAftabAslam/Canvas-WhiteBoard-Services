@@ -28,16 +28,16 @@ class SceneController extends Controller {
 
   saveScene(obj, cb) {
     var self = this;
-    console.log('save scene controller', obj.audio_data[11],app.get('/uploads/'))//this.decodeBase64Image(obj.audio_data));
-    if (obj.audio_data[11] == 'a') {
+    console.log('save scene controller', obj.audio_data[0][11],app.get('/uploads/'))//this.decodeBase64Image(obj.audio_data));
+    if (obj.audio_data[0][11] == 'a') {
       var filename = (new Date()).getTime();
-      fs.writeFile(app.get('/uploads/')+filename+'.amr', new Buffer(obj.audio_data.split(',')[1], 'base64'), function (err) {
+      fs.writeFile(app.get('/uploads/')+filename+'.amr', new Buffer(obj.audio_data[0].split(',')[1], 'base64'), function (err) {
         fs.createReadStream(app.get('/uploads/') + filename +'.amr')
           .pipe(cloudconvert.convert({
             inputformat: 'amr',
             outputformat: 'mp3',
             converteroptions: {
-              audio_bitrate: "721",
+              audio_bitrate: "128",
               audio_frequency: "44100",
               audio_qscale: -1
             }

@@ -1,5 +1,6 @@
 const controllers = require('./controllers');
 const audioconcat = require('audioconcat');
+var ffmpeg = require('fluent-ffmpeg')
 exports.initializeSocket = function (socket) {
 
   socket.on('ping', data => {
@@ -21,6 +22,10 @@ exports.initializeSocket = function (socket) {
           if (ele && ele.drawing_data && JSON.parse(ele.drawing_data)[0].actionsets) {
             var obj = {actionsets: JSON.parse(ele.drawing_data)[0].actionsets};
             allCanvasData.push(obj);
+            /*ffmpeg.ffprobe(app.get('/uploads/') + ele.audio_data, function (err, metadata) {
+              console.log('---------------------------------------------------------');
+              console.log('MetaData : obj :', ele.audio_data, metadata);
+            });*/
           }
           else {
             allCanvasData.push([]);
@@ -28,15 +33,25 @@ exports.initializeSocket = function (socket) {
           audios.push(app.get('/uploads/') + ele.audio_data);
         })
         console.log('audios :', audios);
-        audioconcat(audios).concat(app.get('/uploads/') + data.project_id+'.mp3')
+        /*audioconcat(audios,{'b:a':32,ar: 44100}).concat(app.get('/uploads/') + data.project_id+'.mp3')
           .on('start', function (command) {
             console.log('ffmpeg process started:', command)
           })
           .on('error', function (err, stdout, stderr) {
-            console.error('Error:', err)
+            console.error('-----------------------Error:', err)
             console.error('ffmpeg stderr:', stderr)
           })
           .on('end', function (output) {
+            ffmpeg(app.get('/uploads/') + data.project_id + '.mp3').audioBitrate(32).on('end', function () {
+              console.log('Finished processing');
+              var response = {
+                drawing_data: allCanvasData,
+                audio_data: data.project_id + '.mp3',
+                project_id: data.project_id
+              }
+              socket.emit('res:project:video', response);
+            })
+            .run();
             var response = {
               drawing_data: allCanvasData,
               audio_data: data.project_id+'.mp3',
@@ -44,6 +59,43 @@ exports.initializeSocket = function (socket) {
             }
             socket.emit('res:project:video', response);
           })
+        */
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        var filter = 'concat:' + audios.join('|')
+        ffmpeg(filter,{  })
+          .audioBitrate(128)
+          .outputOptions('-acodec copy')
+          //.outputOptions('-r 32')
+          .audioCodec('libmp3lame')
+          //.audioFilters('setpts=0.5')
+          //.outputOptions('-r 32')
+          //.native()
+          .on('error', function (err) {
+            console.log('An error occurred: ' + err.message);
+          })
+          .on('end', function () {
+            console.log('Merging finished !');
+            var response = {
+              drawing_data: allCanvasData,
+              audio_data: data.project_id + '.mp3',
+              project_id: data.project_id
+            }
+
+
+            ffmpeg(app.get('/uploads/') + data.project_id + '.mp3').audioBitrate('128k');
+            ffmpeg.ffprobe(app.get('/uploads/') + data.project_id + '.mp3', function (err, data) {
+              console.log('file1 metadata:', data);
+              socket.emit('res:project:video', response);
+            });
+
+          })
+          //.mergeToFile('uploads/' + data.project_id + '.mp3', app.get('/uploads/'))
+          .save('uploads/' + data.project_id + '.mp3')
+          .getAvailableEncoders(function (err, encoders) {
+            console.log('Available encoders:');
+            //console.dir(encoders);
+          });
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       });
     })
     .on('req:hide:scene', data => {
@@ -102,5 +154,10 @@ exports.initializeSocket = function (socket) {
     });
 }
 
-
-
+/*
+ffmpeg(app.get('/uploads/') +  '57dc540828be1a13941f6d9b.mp3').audioBitrate('128k');
+*/
+/*ffmpeg.ffprobe(app.get('/uploads/') + 'output.mp3', function (err, data) {
+  console.log('file1 metadata:', data);
+});
+*/
