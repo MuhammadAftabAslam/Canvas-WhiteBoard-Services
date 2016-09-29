@@ -23,6 +23,15 @@ class Model {
       .execAsync();
   }
 
+  findCallback(query, cb) {
+    this.SchemaModel
+      .find(query, function (err, res) {
+        console.log('err : ', res.length);
+        res ? cb(res) : cb();
+      })
+    //.execAsync(cb);
+  }
+
   findOne(query, populate) {
     return this.SchemaModel
       .findOne(query)

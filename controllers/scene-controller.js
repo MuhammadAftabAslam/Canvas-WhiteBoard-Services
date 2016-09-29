@@ -27,58 +27,72 @@ class SceneController extends Controller {
 
 
   saveScene(obj, cb) {
-    console.log('Save Scene  :========>>> ',obj)
+    console.log('Save Scene  :========>>> ', obj.id)
     var self = this;
-    console.log('save scene controller', obj.audio_data[11],app.get('/uploads/'))//this.decodeBase64Image(obj.audio_data));
-    if (obj.audio_data[11] == 'a') {
-      var filename = (new Date()).getTime();
-      fs.writeFile(app.get('/uploads/')+filename+'.amr', new Buffer(obj.audio_data.split(',')[1], 'base64'), function (err) {
-        fs.createReadStream(app.get('/uploads/') + filename +'.amr')
-          .pipe(cloudconvert.convert({
-            inputformat: 'amr',
-            outputformat: 'mp3',
-            converteroptions: {
-              audio_bitrate: "128",
-              audio_frequency: "44100",
-              audio_qscale: -1
-            }
-          }))
-          .pipe(fs.createWriteStream(app.get('/uploads/')+ filename +'.mp3'))
-          .on('finish', function () {
-            console.log('Done!');
-            self.model.create({
-              name: obj.name,
-              project_id: obj.project_id,
-              drawing_data: obj.drawing_data,
-              audio_data: filename+'.mp3',
-              user_id: obj.user_id,
-              scene_hide: 0
-            }).then(doc => {
-              cb(doc);
-            })
-          });
-      });
-    }
-    else if (obj.audio_data[11] == 'm') {
-      var filename = (new Date()).getTime() + '.mp3';
-      fs.writeFile(app.get('/uploads/') + filename, new Buffer(obj.audio_data.split(',')[1], 'base64'), function (err) {
-        if (!err) {
-          self.model.create({
-            name: obj.name,
-            project_id: obj.project_id,
-            drawing_data: obj.drawing_data,
-            audio_data: filename,
-            user_id: obj.user_id,
-            scene_hide: 0
-          }).then(doc => {
-            cb(doc);
-          })
-        }
-        else cb({error: 'error'});
-      });
+    this.model.findCallback({
+      id: obj.id
+    }, foundEle => {
+      console.log('foundEle : ', foundEle);
+      if (foundEle && foundEle.length) {
+        console.log('already exist :');
+        cb({error: 'already exist'})
+      }
+      else {
 
-    }
-    else cb({error: 'no match found'})
+        console.log('save scene controller', obj.audio_data[11], app.get('/uploads/'))//this.decodeBase64Image(obj.audio_data));
+        if (obj.audio_data[11] == 'a') {
+          var filename = (new Date()).getTime();
+          fs.writeFile(app.get('/uploads/') + filename + '.amr', new Buffer(obj.audio_data.split(',')[1], 'base64'), function (err) {
+            fs.createReadStream(app.get('/uploads/') + filename + '.amr')
+              .pipe(cloudconvert.convert({
+                inputformat: 'amr',
+                outputformat: 'mp3',
+                converteroptions: {
+                  audio_bitrate: "128",
+                  audio_frequency: "44100",
+                  audio_qscale: -1
+                }
+              }))
+              .pipe(fs.createWriteStream(app.get('/uploads/') + filename + '.mp3'))
+              .on('finish', function () {
+                console.log('Done!');
+                self.model.create({
+                  name: obj.name,
+                  id: obj.id,
+                  project_id: obj.project_id,
+                  drawing_data: obj.drawing_data,
+                  audio_data: filename + '.mp3',
+                  user_id: obj.user_id,
+                  scene_hide: 0
+                }).then(doc => {
+                  cb(doc);
+                })
+              });
+          });
+        }
+        else if (obj.audio_data[11] == 'm') {
+          var filename = (new Date()).getTime() + '.mp3';
+          fs.writeFile(app.get('/uploads/') + filename, new Buffer(obj.audio_data.split(',')[1], 'base64'), function (err) {
+            if (!err) {
+              self.model.create({
+                name: obj.name,
+                project_id: obj.project_id,
+                drawing_data: obj.drawing_data,
+                audio_data: filename,
+                user_id: obj.user_id,
+                scene_hide: 0
+              }).then(doc => {
+                cb(doc);
+              })
+            }
+            else cb({error: 'error'});
+          });
+
+        }
+        else cb({error: 'no match found'})
+
+      }
+    })
 
   }
 
@@ -92,8 +106,8 @@ class SceneController extends Controller {
   }
 
   updateScene(obj) {
-    return this.model.update(obj._id,{
-      name : obj.name,
+    return this.model.update(obj._id, {
+      name: obj.name,
       project_id: obj.project_id,
       drawing_data: JSON.stringify(obj.drawing_data),
       audio_data: JSON.stringify(obj.audio_data),
@@ -104,14 +118,14 @@ class SceneController extends Controller {
   }
 
   hideScene(obj) {
-    return this.model.update(obj._id,{
-      scene_hide : 1
+    return this.model.update(obj._id, {
+      scene_hide: 1
     }).then(doc => {
       return doc;
     })
   }
 
-  concatente(files,fn) {
+  concatente(files, fn) {
     audioconcat(files)
       //.output('all.mp3')
       .on('start', function (command) {
@@ -126,15 +140,16 @@ class SceneController extends Controller {
         fn(output);
       })
   }
+
   /*
-  getAllScenes(query) {
-    console.log('allScenes query',query);
-    return this.model.find(query).then(doc => {
-      console.log('after saved : ');
-      return doc;
-    });
-  }
-  */
+   getAllScenes(query) {
+   console.log('allScenes query',query);
+   return this.model.find(query).then(doc => {
+   console.log('after saved : ');
+   return doc;
+   });
+   }
+   */
   // update(req, res, next) {
   // 	this.model.findOneAndUpdate({ _id: req.params.id }, req.body)
   // 	.then(doc => {
