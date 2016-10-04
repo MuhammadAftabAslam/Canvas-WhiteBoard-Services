@@ -26,7 +26,7 @@ class Model {
   findCallback(query, cb) {
     this.SchemaModel
       .find(query, function (err, res) {
-        console.log('err : ', res.length);
+        console.log('findCallback : ', res.length);
         res ? cb(res) : cb();
       })
     //.execAsync(cb);
