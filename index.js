@@ -62,7 +62,7 @@ app.post('/upload',upload ,function (req, res) {
   res.json({status:200,data:req.file})
 });
 
-const httpServer = app.listen(port, () => {
+const httpServer = app.listen(port, '::' ,() => {
   console.log(`Magic happens on port ${port}`);
 });
 io = require('socket.io')(httpServer);
