@@ -35,7 +35,77 @@ class SceneController extends Controller {
       console.log('foundEle : ', foundEle);
       if (foundEle && foundEle.length) {
         console.log('already exist :');
-        cb({error: 'already exist'})
+
+        if (obj.audio_data[11] == 'a') {
+          var filename = (new Date()).getTime();
+          fs.writeFile(app.get('/uploads/') + filename + '.amr', new Buffer(obj.audio_data.split(',')[1], 'base64'), function (err) {
+            fs.createReadStream(app.get('/uploads/') + filename + '.amr')
+              .pipe(cloudconvert.convert({
+                inputformat: 'amr',
+                outputformat: 'mp3',
+                converteroptions: {
+                  audio_bitrate: "128",
+                  audio_frequency: "44100",
+                  audio_qscale: -1
+                }
+              }))
+              .pipe(fs.createWriteStream(app.get('/uploads/') + filename + '.mp3'))
+              .on('finish', function () {
+                console.log('Done!');
+                self.model.updateWithOtherParams({id:obj.id},{
+                  name: obj.name,
+                  //id: obj.id,
+                  project_id: obj.project_id,
+                  drawing_data: obj.drawing_data,
+                  audio_data: filename + '.mp3',
+                  user_id: obj.user_id,
+                  scene_hide: obj.scene_hide || 0
+                }).then(doc => {
+                  cb(doc);
+                })
+              });
+          });
+        }
+        else if (obj.audio_data[11] == 'm') {
+          var filename = (new Date()).getTime() + '.mp3';
+          fs.writeFile(app.get('/uploads/') + filename, new Buffer(obj.audio_data.split(',')[1], 'base64'), function (err) {
+            if (!err) {
+              self.model.updateWithOtherParams({id:obj.id},{
+                name: obj.name,
+                project_id: obj.project_id,
+                drawing_data: obj.drawing_data,
+                audio_data: filename,
+                user_id: obj.user_id,
+                scene_hide: obj.scene_hide || 0
+              }).then(doc => {
+                cb(doc);
+              })
+            }
+            else cb({error: 'error'});
+          });
+
+        }
+        else cb({error: 'no match found'})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       }
       else {
 
@@ -63,7 +133,7 @@ class SceneController extends Controller {
                   drawing_data: obj.drawing_data,
                   audio_data: filename + '.mp3',
                   user_id: obj.user_id,
-                  scene_hide: 0
+                  scene_hide: obj.scene_hide || 0
                 }).then(doc => {
                   cb(doc);
                 })
@@ -80,7 +150,7 @@ class SceneController extends Controller {
                 drawing_data: obj.drawing_data,
                 audio_data: filename,
                 user_id: obj.user_id,
-                scene_hide: 0
+                scene_hide: obj.scene_hide || 0
               }).then(doc => {
                 cb(doc);
               })

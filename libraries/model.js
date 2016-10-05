@@ -17,6 +17,12 @@ class Model {
       .execAsync();
   }
 
+  updateWithOtherParams(obj, updatedModel) {
+    return this.SchemaModel
+      .findOneAndUpdate(obj, updatedModel, { new: true })
+      .execAsync();
+  }
+
   find(query) {
     return this.SchemaModel
       .find(query)
